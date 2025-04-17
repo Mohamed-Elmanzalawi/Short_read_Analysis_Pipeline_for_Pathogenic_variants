@@ -105,9 +105,10 @@ Options:
   --config    Specify the config file (default: e99_config.json)
 ```
 
-### Pipeline Flowchart 
+### Pipeline Flowchart   
+![pipeline flowchart](./Pipeline-Flowchart.png)
 
-.. to be updated
+**Overview of SAPP components and workflow.** 
 
 ### Details on the output
 
