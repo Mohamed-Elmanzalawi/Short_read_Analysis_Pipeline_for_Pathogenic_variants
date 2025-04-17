@@ -121,6 +121,7 @@ Below are the details for each output file.
   - The original reads used in the analysis.
   - `00_fastp_results`: The full output of Fastp analysis.
 
+... to be updated
 
 ### Contributors  
 
