@@ -8,9 +8,8 @@ The pipeline was optimised and tested for both Sun Grid Engine and Slurm job sch
 ### Content
 
   - [Installation](#installation)
-  - [Pipeline Flowchart](#pipeline-flowchart)
-  - [Features](#features)
   - [General Usage](#general-usage)
+  - [Pipeline Flowchart](#pipeline-flowchart)
   - [Details on the output](#details-on-the-output)
   - [Contributors](#contributors)
 
