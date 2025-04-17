@@ -113,5 +113,8 @@ Options:
 
 .. to be updated
 
+### Contributors  
+
+* [Mohamed Elmanzalawi](https://github.com/Mohamed-Elmanzalawi), Department of Informatics, National Institute of Genetics, The Graduate University for Advanced Studies (SOKENDAI) 
 
 
