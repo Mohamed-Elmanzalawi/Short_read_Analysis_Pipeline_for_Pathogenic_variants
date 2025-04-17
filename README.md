@@ -111,7 +111,15 @@ Options:
 
 ### Details on the output
 
-.. to be updated
+The pipeline will save all outputs to the output folder assigned in the `e99_config,json`.  
+Below are the details for each output file.  
+
+`00_samples`:  
+* `00_fastp_results`: Has the fastp results for all the samples in one folder. Useful for Multiqc.
+* Contains the files for each sample separated. Each sample folder has the following files:
+  - The original reads used in the analysis.
+  - `00_fastp_results`: The full output of Fastp analysis.
+
 
 ### Contributors  
 
