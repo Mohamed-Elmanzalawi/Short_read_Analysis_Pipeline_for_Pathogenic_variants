@@ -105,7 +105,7 @@ Options:
 ```
 
 ### Pipeline Flowchart   
-![pipeline flowchart](./Pipeline-Flowchart.png)
+![pipeline flowchart](./pictures/Pipeline-Flowchart.png)
 
 **Overview of SAPP components and workflow.** 
 
