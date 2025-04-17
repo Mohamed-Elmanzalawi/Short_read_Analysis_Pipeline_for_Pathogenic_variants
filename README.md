@@ -90,15 +90,22 @@ singularity build parabricker4.3.1-1.sif docker:nvcr.io/nvidia/clara/clara-parab
 
 ---
 
+### General Usage  
+SAPP can use both CPU and GPU nodes.  
+Using `-c`, the pipeline will run the CPU commands from the alignment step to haplotype calling.  
+Using `-g`, the pipeline will run Parabricks that run the alignment step to haplotype calling relying on GPU nodes, which is much faster.  
+```
+SAPP: Short-read Analysis Pipeline for Pathogenic variants 
+
+Usage: $0 [-h] [-g | --gpu] [-c | --cpu] [--config <config_file>]
+Options:
+  -h, --help  Show help message
+  -g, --gpu   Run in GPU mode 
+  -c, --cpu   Run in CPU mode 
+  --config    Specify the config file (default: e99_config.json)
+```
+
 ### Pipeline Flowchart 
-
-.. to be updated
-
-### Features
-
-.. to be updated
-
-### General Usage 
 
 .. to be updated
 
