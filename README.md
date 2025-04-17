@@ -45,14 +45,13 @@ You will find them in the folder named ```00_resources/01_reference38```
 **Note**: The pipeline is compatible with the GATK reference genome since GATK is used in most of the analysis. However, if you want to use another reference genome, be sure to change this in your main config file ```e99_config.json``` and provide the index and dictionary files for that reference genome in the same folder.
   
   5. Download ANNOVAR and its databases  
-     **Official site:** https://annovar.openbioinformatics.org/en/latest/user-guide/download/ 
+     **Official site:** https://annovar.openbioinformatics.org/en/latest/user-guide/download/  
      You can also simply run the script ```01_download_annovar.sh``` and download all of them in one step using the command below.   
 ```
 bash 01_download_annovar.sh
 ```
 You will find them in the folder named ```00_resources/02_annovar```  
-**Note**: 
-
+**Note**: The databases downloaded using the command above might be outdated, so it is advised to check the official website regularly and use the latest databases.
 
 ### Pipeline Flowchart 
 
