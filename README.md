@@ -68,7 +68,7 @@ You will find them in the folder named ```00_resources/02_annovar```
 **Note**: The databases downloaded using the command above might be outdated, so it is advised to check the official website regularly and use the latest databases.
 
 6. Build singularities containers  
-For GATK:
+**- For GATK:**
 ```
 singularity build gatk_latest.sif docker://broadinstitute/gatk:latest
 ```
@@ -77,13 +77,13 @@ singularity build gatk_latest.sif docker://broadinstitute/gatk:latest
 singularity build gatk_4.6.2.0.sifdocker pull broadinstitute/gatk:4.6.2.0
 ```
 
-For Parabricks:
+**- For Parabricks:**
 ```
 singularity build parabricker4.3.1-1.sif docker:nvcr.io/nvidia/clara/clara-parabricks:4.3.1-1
 ```
 
 7. Adjust the config file `e99_config.json`  
-   **This is a very important step as it defines the exact parameters that the pipeline will follow. Ideally, you will only need to do this step once and upon running the pipeline again, you can simply use the same config file.  
+   **This is a very important step as it defines the exact parameters that the pipeline will follow. Ideally, you will only need to do this step once and upon running the pipeline again, you can use the same config file.  
    For each parameter in `e99_config.json`, there is a comment explaining in detail what you should write.**
 
 ---
