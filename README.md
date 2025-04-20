@@ -32,7 +32,7 @@ The following third-party software/packages are required.
 
 1. Cloning the GitHub Repo
 ```
-    git clone https://github.com/Mohamed-Elmanzalawi/Human_Variant_Analysis_Pipeline.git
+git clone https://github.com/Mohamed-Elmanzalawi/Human_Variant_Analysis_Pipeline.git
 ```
   
 2. Download Mamba or Conda  
@@ -42,7 +42,7 @@ The following third-party software/packages are required.
    
 4. Create the virtual environment
 ```
-   mamba env create -f environment.yml
+mamba env create -f environment.yml
 ```
 Activate the environment
 ```
