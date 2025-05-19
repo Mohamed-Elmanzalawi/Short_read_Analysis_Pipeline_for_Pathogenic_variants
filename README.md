@@ -1,3 +1,5 @@
+![pipeline-banner](./pictures/SAPP_logo.png)
+
 # SAPP: Short-read Analysis Pipeline for Pathogenic variants 
 
 A high-performance cluster (HPC)-compatible pipeline for short-read sequence analysis to identify pathogenic variants. It was optimized and validated on both Sun Grid Engine (SGE) and Slurm job scheduling systems to ensure efficiency and scalability across different HPC environments.
