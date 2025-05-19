@@ -76,7 +76,7 @@ singularity build gatk_latest.sif docker://broadinstitute/gatk:latest
 ```
 **Note:** The script has been tested and is working accurately for GATK version 4.6.2.0, so it is advised to use this version in case any compatibility issues occur in the future
 ```
-singularity build gatk_4.6.2.0.sifdocker pull broadinstitute/gatk:4.6.2.0
+singularity build gatk_4.6.2.0.sif docker pull broadinstitute/gatk:4.6.2.0
 ```
 
 - **For Parabricks:**
