@@ -1,3 +1,4 @@
+![pipeline-logo](./pictures/SAPP_logo.png)
 
 # SAPP: Short-read Analysis Pipeline for Pathogenic variants 
 
