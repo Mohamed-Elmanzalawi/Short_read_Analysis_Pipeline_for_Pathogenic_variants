@@ -1,0 +1,98 @@
+{
+    "output_file": {
+        "path": "/home/melmanzalawi/projects/testing",
+        "comment": "The absolute path for the pipeline output."
+    },
+
+    "sample_data": {
+        "num_of_samples": "1",
+        "starting_sample": "1",
+        "reads_dir": "/home/melmanzalawi/projects/02_human_disease/reads_v2",
+        "read_1_extension": "_1.fastq",
+        "read_2_extension": "_2.fastq",
+        "comment_1": {
+            "num_of_samples": "The total number of samples.",
+            "starting_sample": "The sample you wish to start from incase you want to divide the samples into multiple runs.",
+            "reads_dir": "Main directory that has the your samples.",
+            "read_1_extension": "The extension for the first  read. example: _1.fq.gz or _1.fq ..etc .",
+            "read_2_extension": "The extension for the second read. example: _2.fq.gz or _2.fq ..etc ."
+        },
+
+        "IMP_NOTE": "Change the advanced_mode to True and the 3 variables below ONLY if you recieved your fastq files from the sequencer and have a CSV file with your samples.",
+        "advanced_mode": "False",
+        "main_dir": "/mnt/pbnas2/NGS_rawdata/T7",
+        "sub_dir": "L01",
+        "samples_csv_file": "/mnt/scratch2/mohamed/sample_pid235_testing.csv",
+        "comment_2": {
+            "advanced_mode": "Advanced mode relies on data just obtained ftom the sequencer and a CSV with sample details. (True or False). ",
+            "main_fastq_dir": "Main directory that has the your samples (Advanced mode must be True). ",
+            "sub_fastq_dir": "Sub dir that has your fastq files (fq.gz) (Advanced mode must be True)",
+            "samples_csv_file": "A CSV file that has your samples into 4 columns:FCID (flow cell ID), Sample_ID, index, Sample_Name (Advanced mode must be True)"
+        }
+    },
+
+    "reference_genome": {
+        "dir": "/home/melmanzalawi/projects/00_resources/01_reference38",
+        "fasta_file": "/home/melmanzalawi/projects/00_resources/01_reference38/Homo_sapiens_assembly38.fasta",
+        "comments": {
+            "dir": "The path for the reference genome directory. NOTE: the directory should have the following files: dbsnp.vcf, reference genome dictionary file, 1000G_phase1.snps.high_confidence.hg38,1000G_omni2.5.hg38.vcf.gz,hapmap_3.3.hg38.vcf.gz",
+            "fasta_file": "The path for the reference genome fasta file."
+        }
+    },
+
+    "annovar": {
+        "dir": "/home/melmanzalawi/projects/00_resources/02_annovar",
+        "db": "/home/melmanzalawi/projects/00_resources/02_annovar/humandb",
+        "annotation_protocols":
+         {
+            "cytoBand": "r",
+            "refGene": "g",
+            "ensGene": "g",
+            "avsnp151": "f",
+            "clinvar_20240611": "f",
+            "dbnsfp47a": "f",
+            "dbscsnv11": "f",
+            "exac03": "f",
+            "gene4denovo201907": "f",
+            "gnomad41_exome": "f",
+            "intervar_20180118": "f"
+        },
+        "comments": {
+            "dir": "The path to ANNOVAR directory",
+            "db": "The path to ANNOVAR database",
+            "annotation_protocols": "Protocol set for ANNOVAR to specify database used and the operation depending on the database used."        }
+    },
+
+    "singularity_containers": {
+        "parabricks": "/home/melmanzalawi/projects/00_resources/03_containers/parabricker4.3.1-1.sif",
+        "gatk": "/home/melmanzalawi/projects/00_resources/03_containers/gatk_latest.sif",
+        "comments": {
+            "parabricks": "The path for the singularity container sif file for parabricks.",
+            "gatk": "The path for the singularity container sif file for gatk."
+        }
+    },
+
+    "parameters": {
+        "cpu_node": "epyc",
+        "gpu_node": "all.q@gpu1",
+        "fastp_array_job_limit": 20,
+        "parabricks_array_job_limit": 2,
+        "Pathogenicity_Prediction": "True",
+        "Pathogenicity_conditions": 5,
+        "comments": {
+            "cpu_node": "The name of the CPU node used for the analysis.",
+            "gpu_node": "The name of the GPU node used for the analysis.",
+            "fastp_array_job_limit": "The array job limit for the Sun Grid Engine for Fastp. Default: 20",
+            "parabricks_array_job_limit": "The array job limit for the Sun Grid Engine for Parabricks. Default: 2",
+            "Pathogenicity_Prediction": "Set TRUE to allow the pipline to filter variants based on pathogenicity based on ClinVar & prediction scores (options: True or False). Default: True",
+            "Pathogenicity Conditions": "Only active if Pathogenicity_Prediction set to True. The minimum number of pathogenicity prediction scores that assign variant as pathogenic during filtration. Default: 5"
+        }
+    },
+
+    "miscellaneous_files": {
+        "temp_dir": "/home/melmanzalawi/projects/99_temp_dir",
+        "comments": {
+            "temp_dir": "The path for temp folder used when running parabricks or GATK. PLEASE SEPCIFY A LARGE SPACE FOLDER."
+        }
+    }
+}

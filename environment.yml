@@ -1,0 +1,11 @@
+name: biotools
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - jq
+  - pandas
+  - fastp
+  - conda-forge::singularity
+  - bwa
