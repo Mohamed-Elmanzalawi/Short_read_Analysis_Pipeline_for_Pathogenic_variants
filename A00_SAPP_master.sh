@@ -89,6 +89,7 @@ sample_ids_job_id=$(sbatch --job-name=sample_ids --output=${sample_ids_log_dir}/
 
 echo "Submitted batch job ${sample_ids_job_id} -- sample_ids"
 
+#=====================================================================================================
 
 #Running fastp
 fastp_job_id=$(sbatch --job-name=fastp --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${fastp_log_dir}/fastp_%A_%a.out \
@@ -116,7 +117,7 @@ haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sampl
 echo "Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
 fi
 
-
+#=====================================================================================================
 
 #Running GATK Genotyping
 genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genotyping_%A_%a.out \
@@ -124,18 +125,24 @@ genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genoty
 
 echo "Submitted batch job ${genotyping_job_id} -- genotyping"
 
+#=====================================================================================================
 
 #Annotation using ANNOVAR
 annotation_job_id=$(sbatch --job-name=annotation --output=${ANNOVAR_log_dir}/annotation_%A_%a.out \
-                        --error=${ANNOVAR_log_dir}/annotation_%A_%a.err e04_Annotation.sh | awk '{print $4}')
+                        --error=${ANNOVAR_log_dir}/annotation_%A_%a.err --partition=${cpu_node} --dependency=afterok:${genotyping_job_id} e04_Annotation.sh --config ${config_file} | awk '{print $4}')
 
 echo "Submitted batch job ${annotation_job_id} -- annotation"
+
+#=====================================================================================================
 
 #Generating a file for each sample
 variant_per_sample_job_id=$(sbatch --job-name=variant_per_sample --array=${starting_sample}-${num_of_samples} --output=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.out \
                         --error=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.err --partition=${cpu_node} --dependency=afterok:${annotation_job_id} e05_var_per_sample.sh --config ${config_file} | awk '{print $4}')
 
+
 echo "Submitted batch job ${variant_per_sample_job_id} -- variant_per_sample"
+
+#=====================================================================================================
 
 #Merging all the vcf files
 merging_job_id=$(sbatch --job-name=merging --output=${merging_log_dir}/merging_%A_%a.out \
