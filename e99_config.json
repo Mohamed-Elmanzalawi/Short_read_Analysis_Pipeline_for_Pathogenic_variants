@@ -13,8 +13,8 @@
         "num_of_samples": "2",
         "starting_sample": "1",
         "reads_dir": "/home/melmanzalawi/projects/02_human_disease/reads",
-        "read_1_extension": "_1.fastq",
-        "read_2_extension": "_2.fastq",
+        "read_1_extension": "_1.fq.gz",
+        "read_2_extension": "_2.fq.gz",
         "comment_1": {
             "num_of_samples": "The total number of samples.",
             "starting_sample": "The sample you wish to start from incase you want to divide the samples into multiple runs.",
