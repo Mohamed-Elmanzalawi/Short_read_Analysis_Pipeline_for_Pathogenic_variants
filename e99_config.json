@@ -1,13 +1,18 @@
 {
     "output_file": {
         "path": "/home/melmanzalawi/projects/testing",
-        "comment": "The absolute path for the pipeline output."
+        "light_mode": "False",
+        "comment": {
+            "path": "The absolute path for the pipeline output.",
+            "light_mode": "Set True if you want to run the pipeline in light mode. Light mode will delete all the unnecessary files and folders while the pipeline is running. (True or False)."
+        }
+
     },
 
     "sample_data": {
-        "num_of_samples": "1",
+        "num_of_samples": "2",
         "starting_sample": "1",
-        "reads_dir": "/home/melmanzalawi/projects/02_human_disease/reads_v2",
+        "reads_dir": "/home/melmanzalawi/projects/02_human_disease/reads",
         "read_1_extension": "_1.fastq",
         "read_2_extension": "_2.fastq",
         "comment_1": {
