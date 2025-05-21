@@ -87,6 +87,7 @@ singularity build parabricker4.3.1-1.sif docker:nvcr.io/nvidia/clara/clara-parab
 7. Adjust the config file `e99_config.json`  
   :star: **This is a very important step as it defines the exact parameters that the pipeline will follow. Ideally, you will only need to do this step once and upon running the pipeline again, you can use the same config file.  
    For each parameter in `e99_config.json`, there is a comment explaining in detail what you should write.**
+   The parameters include, but are not limited to, the output file location, the path to Singularity containers for GATK and Parabricks, and the HPC nodes used in the analysis.
 
 ---
 
