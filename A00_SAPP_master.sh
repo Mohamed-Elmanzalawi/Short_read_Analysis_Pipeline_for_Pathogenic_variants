@@ -121,7 +121,7 @@ fi
 
 #Running GATK Genotyping
 genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genotyping_%A_%a.out \
-                        --error=${GATK_log_dir}/genotyping_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e03_genotyping.sh --config ${config_file} | awk '{print $4}')
+                        --error=${GATK_log_dir}/genotyping_%A_%a.err --partition=${cpu_node} --dependency=afterok:${haplotype_caller_job_id} e03_genotyping.sh --config ${config_file} | awk '{print $4}')
 
 echo "Submitted batch job ${genotyping_job_id} -- genotyping"
 
@@ -136,7 +136,7 @@ echo "Submitted batch job ${annotation_job_id} -- annotation"
 #=====================================================================================================
 
 #Generating a file for each sample
-variant_per_sample_job_id=$(sbatch --job-name=variant_per_sample --array=${starting_sample}-${num_of_samples} --output=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.out \
+variant_per_sample_job_id=$(sbatch --job-name=variant_per_sample --output=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.out \
                         --error=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.err --partition=${cpu_node} --dependency=afterok:${annotation_job_id} e05_var_per_sample.sh --config ${config_file} | awk '{print $4}')
 
 
