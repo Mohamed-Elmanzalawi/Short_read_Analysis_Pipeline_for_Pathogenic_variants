@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --array=1-2             # Array job
 #SBATCH --time=48:00:00         # Time limit (adjust as needed)
 #SBATCH --mem=100G              # Memory allocation per task (adjust as needed)
 #SBATCH --cpus-per-task=16      # CPUs per task
@@ -19,7 +18,7 @@ while true; do
     esac
 done
 
-source ~/miniconda3/bin/activate
+source ~/miniforge3/bin/activate
 source activate biotools
 
 # Load the configuration file
@@ -30,11 +29,13 @@ pathogenicity_prediction=$(jq -r .parameters.Pathogenicity_Prediction ${config_f
 Pathogenicity_conditions=$(jq -r .parameters.Pathogenicity_conditions ${config_file})
 #=====================================================================================================
 
-NUM=$SGE_TASK_ID
-NAME=$(cat $sample_ids | head -$NUM | tail -1)
 
 var_per_sample_dir=${output_dir}/05_var_per_sample
-sample_dir=${var_per_sample_dir}/$NAME
 mkdir -p ${var_per_sample_dir} 
-mkdir -p ${sample_dir} 
-python e05.1_var_per_sample.py $annovar_file $var_per_sample_dir $NAME $pathogenicity_prediction $Pathogenicity_conditions
+
+while IFS= read -r line; do
+    sample_dir=${var_per_sample_dir}/$line
+    mkdir -p ${sample_dir} 
+done < ${sample_ids}
+
+python e05.1_var_per_sample.py $annovar_file $var_per_sample_dir $sample_ids $pathogenicity_prediction $Pathogenicity_conditions
