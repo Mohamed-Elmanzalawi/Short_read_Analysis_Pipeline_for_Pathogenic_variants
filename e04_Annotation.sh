@@ -2,23 +2,26 @@
 #SBATCH --time=48:00:00        # Time limit (adjust as needed)
 #SBATCH --mem=100G             # Memory allocation per task/array job (adjust as needed)
 #SBATCH --cpus-per-task=10     # CPUs per task/array job
+#SBATCH --export=NONE
 
 set -euo pipefail
 
 #======================================Change this when working on new project========================
 # load config file
-OPTIONS=$(getopt -o "" -l config: -- "$@")
+OPTIONS=$(getopt -o "" -l light_mode,config: -- "$@")
 
 config_file="e99_config.json"
+light_mode=false
 eval set -- "$OPTIONS"
 while true; do
     case "$1" in
         --config) config_file=$2; shift 2;;
+        --light_mode)  light_mode=true; shift ;;
         --) shift; break ;;
     esac
 done
 
-source ~/miniforge3/bin/activate
+source ~/miniforge3/etc/profile.d/conda.sh 
 source activate biotools
 
 # Load the configuration file
@@ -78,3 +81,6 @@ cp ${annotation_dir}/analysis-ready.hg38_multianno.txt ${annotation_dir}/analysi
 
 # Replace the header in the first file
 sed -i "1s/.*/$new_header/" ${annotation_dir}/analysis-ready.hg38_multianno.txt
+
+#Light_mode: Deleting unecessary results
+rm -rf ${genotype_dir} 

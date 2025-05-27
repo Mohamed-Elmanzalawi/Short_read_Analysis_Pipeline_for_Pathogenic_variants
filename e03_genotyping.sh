@@ -3,23 +3,26 @@
 #SBATCH --time=48:00:00        # Time limit (adjust as needed)
 #SBATCH --mem=100G             # Memory allocation per task/array job (adjust as needed)
 #SBATCH --cpus-per-task=16     # CPUs per task/array job
+#SBATCH --export=NONE
 
 set -euo pipefail
 
 #======================================Change this when working on new project========================
 # load config file
-OPTIONS=$(getopt -o "" -l config: -- "$@")
+OPTIONS=$(getopt -o "" -l light_mode,config: -- "$@")
 
 config_file="e99_config.json"
+light_mode=false
 eval set -- "$OPTIONS"
 while true; do
     case "$1" in
         --config) config_file=$2; shift 2;;
+        --light_mode)  light_mode=true; shift ;;
         --) shift; break ;;
     esac
 done
 
-source ~/miniforge3/bin/activate
+source ~/miniforge3/etc/profile.d/conda.sh 
 source activate biotools
 
 # Load configuration variables
@@ -150,3 +153,9 @@ singularity exec ${gatk_sif} gatk MergeVcfs \
        --INPUT ${genotype_dir}/chr${CHR}_snp.filt.vcf.gz \
        --INPUT ${genotype_dir}/chr${CHR}_indel.filt.vcf.gz \
        --OUTPUT ${genotype_dir}/chr${CHR}_all.filt.vcf.gz
+
+#Light_mode: Deleting unecessary results
+for dir in ${combinegvcf_dir} ${gvcf}
+do
+    rm -rf ${dir} 
+done

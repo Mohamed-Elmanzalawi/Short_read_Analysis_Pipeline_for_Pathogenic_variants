@@ -5,18 +5,17 @@
 #$ -tc 2
 set -euo pipefail
 
-source ~/miniconda3/bin/activate
-source activate biotools
-
 #======================================Change this when working on new project========================
 # load config file
-OPTIONS=$(getopt -o "" -l config: -- "$@")
+OPTIONS=$(getopt -o "" -l light_mode,config: -- "$@")
 
 config_file="e99_config.json"
+light_mode=false
 eval set -- "$OPTIONS"
 while true; do
     case "$1" in
         --config) config_file=$2; shift 2;;
+        --light_mode)  light_mode=$2; shift2 ;;
         --) shift; break ;;
     esac
 done
@@ -45,7 +44,27 @@ do
     mkdir -p ${dir} 
 done
 
+
+if [[ ${light_mode} == "true" ]]; then
+
 singularity exec --nv -B /mnt:/mnt ${parabricks_sif} \
+    pbrun germline \
+    --ref ${Ref} \
+    --in-fq ${fastp_result}/${NAME}_R1.fq ${fastp_result}/${NAME}_R2.fq "@RG\tID:${NAME}\tPU:${NAME}\tSM:${NAME}\tPL:illumina\tLB:${NAME}" \
+    --tmp-dir ${temp_dir} \
+    --num-cpu-threads-per-stage 16 \
+    --bwa-cpu-thread-pool 16 \
+    --gpusort \
+    --gpuwrite \
+    --knownSites ${Ref_dir}/Homo_sapiens_assembly38.dbsnp138.vcf \
+    --knownSites ${Ref_dir}/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz \
+    --gvcf \
+    --out-bam ${parabricks_output}/01_bam_after_marks/${NAME}.germline_dedup.bam \
+    --out-variants ${output_dir}/01_gvcf/${NAME}.germline.g.vcf
+
+else 
+
+singularity exec --nv -B /mnt:/mnt ${pa rabricks_sif} \
     pbrun germline \
     --ref ${Ref} \
     --in-fq ${fastp_result}/${NAME}_R1.fq ${fastp_result}/${NAME}_R2.fq "@RG\tID:${NAME}\tPU:${NAME}\tSM:${NAME}\tPL:illumina\tLB:${NAME}" \
@@ -62,3 +81,8 @@ singularity exec --nv -B /mnt:/mnt ${parabricks_sif} \
     --out-recal-file ${parabricks_output}/03_BQSR_report/${NAME}.germline_recal_table.txt \
     --htvc-bam-output ${parabricks_output}/04_haplo_htvc/${NAME}.germline_htvc.bam \
     --out-variants ${output_dir}/01_gvcf/${NAME}.germline.g.vcf
+
+#Light_mode: Deleting unecessary results
+rm -rf ${fastp_result}
+
+fi
