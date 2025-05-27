@@ -7,12 +7,13 @@ show_help(){
 cat <<EOF
 SAPP: Short-read Analysis Pipeline for Pathogenic variants 
 
-Usage: $0 [-h] [-g | --gpu] [-c | --cpu] [--config <config_file>]
+Usage: $0 [-h] [-g | --gpu] [-c | --cpu] [-l | --light_mode] [--config <config_file>]
 Options:
   -h, --help  Show help message
-  -g, --gpu   Run in GPU mode 
-  -c, --cpu   Run in CPU mode 
-  --config    Specify the config file (default: e99_config.json)
+  -g, --gpu             Run in GPU mode 
+  -c, --cpu             Run in CPU mode 
+  -l, --light_mode      Run in light mode that significantly reduces the size of the output files.
+  --config              Specify the config file (default: e99_config.json)
 EOF
 exit 1
 }
@@ -20,29 +21,41 @@ exit 1
 gpu=false
 cpu=false
 config_file="e99_config.json"
+light_mode=false
+date=$(date +'%Y-%m-%d %H:%M:%S')
 
-OPTIONS=$(getopt -o hgc -l help,gpu,cpu -- "$@")
+OPTIONS=$(getopt -o hgcl -l help,gpu,cpu -- "$@")
 
 eval set -- "$OPTIONS"
 while true; do
     case "$1" in
         -h | --help)  show_help ;;
-        -g | --gpu)   gpu=true; shift ;;
-        -c | --cpu)   cpu=true; shift ;;
+        -g | --gpu)   
+            gpu=True
+            echo "${date}: Running SAPP in GPU mode"
+            shift ;;
+        -c | --cpu)   
+            cpu=True
+            echo "${date}: Running SAPP in CPU mode"
+            shift ;;
+        -l | --light_mode)  
+            light_mode=True 
+            echo "${date}: Running SAPP in light mode"
+            shift ;;
         --config)     config_file=$2; shift 2 ;;
         --) shift; break ;;
     esac
 done
 
 # Alert to prevent both GPU and CPU from being set simultaneously
-if [[ "$gpu" == "true" && "$cpu" == "true" ]]; then
-    echo "Error: Cannot run in both GPU and CPU mode simultaneously."
+if [[ "$gpu" == "True" && "$cpu" == "True" ]]; then
+    echo "${date}: Error: Cannot run in both GPU and CPU mode simultaneously."
     show_help
 fi
 
 # Alert If no mode for the script was set.
-if [[ "$gpu" == "false" && "$cpu" == "false" ]]; then
-    echo "Error: please select the script mode GPU (-g) or CPU (-c)."
+if [[ "$gpu" == "False" && "$cpu" == "False" ]]; then
+    echo "${date}: Error: please select the script mode GPU (-g) or CPU (-c)."
     show_help
 fi
 
@@ -87,7 +100,7 @@ done
 sample_ids_job_id=$(sbatch --job-name=sample_ids --output=${sample_ids_log_dir}/%x_%j.out \
                         --error=${sample_ids_log_dir}/%x_%j.err --partition=${cpu_node} e00_get_samples.sh --config ${config_file} | awk '{print $4}') 
 
-echo "Submitted batch job ${sample_ids_job_id} -- sample_ids"
+echo "${date}: Submitted batch job ${sample_ids_job_id} -- sample_ids"
 
 #=============================================Fastp===================================================
 
@@ -95,34 +108,32 @@ echo "Submitted batch job ${sample_ids_job_id} -- sample_ids"
 fastp_job_id=$(sbatch --job-name=fastp --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${fastp_log_dir}/fastp_%A_%a.out \
                         --error=${fastp_log_dir}/fastp_%A_%a.err --partition=${cpu_node} --dependency=afterok:${sample_ids_job_id} e01_fastp.sh --config ${config_file} | awk '{print $4}')
 
-echo "Submitted batch job ${fastp_job_id} -- fastp"
+echo "${date}: Submitted batch job ${fastp_job_id} -- fastp"
 
 #=======================================Parabricks or GATK HaplotypeCaller=============================
 
 # CPU or GPU selection mode
-if [ "$gpu" == "true" ];then
+if [ "$gpu" == "True" ];then
 #Running Parabricks using GPU nodes
 job_name=parabricks
 
 #Creating log directory
 mkdir -p ${Parabricks_log_dir}
 
-echo "Running script in GPU mode"
 qsub -N ${job_name} -t 1:${num_of_samples}:1 -tc ${parabricks_array_job_limit} -o ${Parabricks_log_dir} -e ${Parabricks_log_dir} -q ${gpu_node} -hold_jid fastp e02_parabricks.sh
 fi
 
-if [ "$cpu" == "true" ];then
+if [ "$cpu" == "True" ];then
 #Running GATK haplotypcaller using CPU nodes
 job_name=haplotype_caller
 
 #Creating log directory
 mkdir -p ${Parabricks_log_dir}
 
-echo "Running script in CPU mode"
 haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${haplotypcaller_log_dir}/${job_name}_%A_%a.out \
-                        --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} | awk '{print $4}')
+                        --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
 
-echo "Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
+echo "${date}: Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
 fi
 
 #=========================================GATK Genotyping=============================================
@@ -131,17 +142,17 @@ mkdir -p ${GATK_log_dir}
 
 #Running GATK Genotyping
 genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genotyping_%A_%a.out \
-                        --error=${GATK_log_dir}/genotyping_%A_%a.err --partition=${cpu_node} --dependency=afterok:${haplotype_caller_job_id} e03_genotyping.sh --config ${config_file} | awk '{print $4}')
+                        --error=${GATK_log_dir}/genotyping_%A_%a.err --partition=${cpu_node} --dependency=afterok:${haplotype_caller_job_id} e03_genotyping.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
 
-echo "Submitted batch job ${genotyping_job_id} -- genotyping"
+echo "${date}: Submitted batch job ${genotyping_job_id} -- genotyping"
 
 #=============================================ANNOVAR=================================================
 
 #Annotation using ANNOVAR
 annotation_job_id=$(sbatch --job-name=annotation --output=${ANNOVAR_log_dir}/annotation_%A_%a.out \
-                        --error=${ANNOVAR_log_dir}/annotation_%A_%a.err --partition=${cpu_node} --dependency=afterok:${genotyping_job_id} e04_Annotation.sh --config ${config_file} | awk '{print $4}')
+                        --error=${ANNOVAR_log_dir}/annotation_%A_%a.err --partition=${cpu_node} --dependency=afterok:${genotyping_job_id} e04_Annotation.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
 
-echo "Submitted batch job ${annotation_job_id} -- annotation"
+echo "${date}: Submitted batch job ${annotation_job_id} -- annotation"
 
 #======================================Varaints file per sample=======================================
 
@@ -150,7 +161,7 @@ variant_per_sample_job_id=$(sbatch --job-name=variant_per_sample --output=${vari
                         --error=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.err --partition=${cpu_node} --dependency=afterok:${annotation_job_id} e05_var_per_sample.sh --config ${config_file} | awk '{print $4}')
 
 
-echo "Submitted batch job ${variant_per_sample_job_id} -- variant_per_sample"
+echo "${date}: Submitted batch job ${variant_per_sample_job_id} -- variant_per_sample"
 
 #==========================Create final VCF file with all sample after filtering======================
 
@@ -158,4 +169,4 @@ echo "Submitted batch job ${variant_per_sample_job_id} -- variant_per_sample"
 merging_job_id=$(sbatch --job-name=merging --output=${merging_log_dir}/merging_%A_%a.out \
                         --error=${merging_log_dir}/merging_%A_%a.err --partition=${cpu_node} --dependency=afterok:${variant_per_sample_job_id} e06_merge_var.sh  --config ${config_file} | awk '{print $4}')
 
-echo "Submitted batch job ${merging_job_id} -- merging"
+echo "${date}: Submitted batch job ${merging_job_id} -- merging"
