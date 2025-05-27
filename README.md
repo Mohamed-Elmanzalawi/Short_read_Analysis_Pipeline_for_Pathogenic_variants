@@ -116,13 +116,9 @@ Options:
 ### Details on the output
 
 The pipeline will save all outputs to the output folder assigned in the `e99_config,json`.  
-Below are the details for each output file.  
+Below is a schematic showing the SAPP general output files structure.
 
-`00_samples`:  
-* `00_fastp_results`: Has the fastp results for all the samples in one folder. Useful for MultiQC.
-* Contains the files for each sample separated. Each sample folder has the following files:
-  - The original reads used in the analysis.
-  - `00_fastp_results`: The full output of Fastp analysis.
+![pipeline output_structure](./pictures/SAPP_General_output_files_structure.jpg)
 
 ... to be updated
 
