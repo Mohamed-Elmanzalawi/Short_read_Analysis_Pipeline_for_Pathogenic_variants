@@ -120,8 +120,6 @@ Below is a schematic showing the SAPP general output files structure.
 
 ![pipeline output_structure](./pictures/SAPP_General_output_files_structure.jpg)
 
-... to be updated
-
 ### Contributors  
 
 * [Mohamed Elmanzalawi](https://github.com/Mohamed-Elmanzalawi), Department of Informatics, National Institute of Genetics, The Graduate University for Advanced Studies (SOKENDAI) 
