@@ -2,6 +2,7 @@
 #SBATCH --time=48:00:00        # Time limit (adjust as needed)
 #SBATCH --mem=100G             # Memory allocation per task/array job (adjust as needed)
 #SBATCH --cpus-per-task=10     # CPUs per task/array job
+#SBATCH --export=NONE
 
 set -euo pipefail
 
@@ -18,7 +19,7 @@ while true; do
     esac
 done
 
-source ~/miniconda3/bin/activate
+source ~/miniforge3/etc/profile.d/conda.sh 
 source activate biotools
 
 # Load the configuration file

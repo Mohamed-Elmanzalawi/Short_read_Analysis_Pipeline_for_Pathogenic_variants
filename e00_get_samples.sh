@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --time=01:00:00             # Time limit (adjust as needed)
 #SBATCH --mem=4G                    # Memory allocation (adjust as needed)
+#SBATCH --export=NONE
 
 set -euo pipefail
 
@@ -17,7 +18,7 @@ while true; do
     esac
 done
 
-source ~/miniforge3/bin/activate
+source ~/miniforge3/etc/profile.d/conda.sh 
 source activate biotools
 
 # Load configuration variables
