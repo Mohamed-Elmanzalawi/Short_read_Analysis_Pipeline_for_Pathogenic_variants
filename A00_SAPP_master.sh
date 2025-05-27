@@ -50,6 +50,7 @@ source ~/miniforge3/bin/activate
 source activate biotools
 
 #======================================Change this when working on new project========================
+
 output_dir=$(jq -r .output_file.path ${config_file})
 num_of_samples=$(jq -r .sample_data.num_of_samples ${config_file})
 starting_sample=$(jq -r .sample_data.starting_sample ${config_file})
@@ -57,9 +58,9 @@ fastp_array_job_limit=$(jq -r .parameters.fastp_array_job_limit ${config_file})
 parabricks_array_job_limit=$(jq -r .parameters.fastp_array_job_limit ${config_file})
 gpu_node=$(jq -r .parameters.gpu_node ${config_file})
 cpu_node=$(jq -r .parameters.cpu_node ${config_file})
-#=====================================================================================================
 
-# Creating directory for log files
+#=======================================Log file directories==========================================
+
 fastp_log_dir=${output_dir}/98_logs/e01_fastp/
 Parabricks_log_dir=${output_dir}/98_logs/e02_parabricks/
 haplotypcaller_log_dir=${output_dir}/98_logs/e02.1_haplotypecaller/
@@ -67,13 +68,15 @@ GATK_log_dir=${output_dir}/98_logs/e03_genotyping/
 ANNOVAR_log_dir=${output_dir}/98_logs/e04_annotation/
 variant_per_sample_log_dir=${output_dir}/98_logs/e05_var_per_sample/
 merging_log_dir=${output_dir}/98_logs/e06_merging/
+sample_ids_log_dir=${output_dir}/98_logs/e00_sample_ids/
 
-for dir in ${fastp_log_dir} ${GATK_log_dir} ${ANNOVAR_log_dir} ${variant_per_sample_log_dir} ${merging_log_dir} 
+for dir in ${sample_ids_log_dir} ${fastp_log_dir} ${GATK_log_dir} ${ANNOVAR_log_dir} ${variant_per_sample_log_dir} ${merging_log_dir} 
 do
     mkdir -p ${dir}
 done
 
-#Getting sample id file.
+#==========================================Building sample id file====================================
+
 ## NOTE: This step can be skipped if you can generate a file with sample names in one column in a txt.file.
 ##       IMP: The file name should be: sample_ids.txt
 
@@ -81,15 +84,12 @@ done
 ###         E00014223
 ###         E00012545
 
-sample_ids_log_dir=${output_dir}/98_logs/e00_sample_ids/
-mkdir -p ${sample_ids_log_dir}
-
 sample_ids_job_id=$(sbatch --job-name=sample_ids --output=${sample_ids_log_dir}/%x_%j.out \
                         --error=${sample_ids_log_dir}/%x_%j.err --partition=${cpu_node} e00_get_samples.sh --config ${config_file} | awk '{print $4}') 
 
 echo "Submitted batch job ${sample_ids_job_id} -- sample_ids"
 
-#=====================================================================================================
+#=============================================Fastp===================================================
 
 #Running fastp
 fastp_job_id=$(sbatch --job-name=fastp --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${fastp_log_dir}/fastp_%A_%a.out \
@@ -97,11 +97,16 @@ fastp_job_id=$(sbatch --job-name=fastp --array=${starting_sample}-${num_of_sampl
 
 echo "Submitted batch job ${fastp_job_id} -- fastp"
 
+#=======================================Parabricks or GATK HaplotypeCaller=============================
+
 # CPU or GPU selection mode
 if [ "$gpu" == "true" ];then
 #Running Parabricks using GPU nodes
 job_name=parabricks
+
+#Creating log directory
 mkdir -p ${Parabricks_log_dir}
+
 echo "Running script in GPU mode"
 qsub -N ${job_name} -t 1:${num_of_samples}:1 -tc ${parabricks_array_job_limit} -o ${Parabricks_log_dir} -e ${Parabricks_log_dir} -q ${gpu_node} -hold_jid fastp e02_parabricks.sh
 fi
@@ -109,7 +114,10 @@ fi
 if [ "$cpu" == "true" ];then
 #Running GATK haplotypcaller using CPU nodes
 job_name=haplotype_caller
-mkdir -p ${haplotypcaller_log_dir}
+
+#Creating log directory
+mkdir -p ${Parabricks_log_dir}
+
 echo "Running script in CPU mode"
 haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${haplotypcaller_log_dir}/${job_name}_%A_%a.out \
                         --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} | awk '{print $4}')
@@ -117,7 +125,9 @@ haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sampl
 echo "Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
 fi
 
-#=====================================================================================================
+#=========================================GATK Genotyping=============================================
+#Creating log directory
+mkdir -p ${GATK_log_dir}
 
 #Running GATK Genotyping
 genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genotyping_%A_%a.out \
@@ -125,7 +135,7 @@ genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genoty
 
 echo "Submitted batch job ${genotyping_job_id} -- genotyping"
 
-#=====================================================================================================
+#=============================================ANNOVAR=================================================
 
 #Annotation using ANNOVAR
 annotation_job_id=$(sbatch --job-name=annotation --output=${ANNOVAR_log_dir}/annotation_%A_%a.out \
@@ -133,7 +143,7 @@ annotation_job_id=$(sbatch --job-name=annotation --output=${ANNOVAR_log_dir}/ann
 
 echo "Submitted batch job ${annotation_job_id} -- annotation"
 
-#=====================================================================================================
+#======================================Varaints file per sample=======================================
 
 #Generating a file for each sample
 variant_per_sample_job_id=$(sbatch --job-name=variant_per_sample --output=${variant_per_sample_log_dir}/variant_per_sample_%A_%a.out \
@@ -142,7 +152,7 @@ variant_per_sample_job_id=$(sbatch --job-name=variant_per_sample --output=${vari
 
 echo "Submitted batch job ${variant_per_sample_job_id} -- variant_per_sample"
 
-#=====================================================================================================
+#==========================Create final VCF file with all sample after filtering======================
 
 #Merging all the vcf files
 merging_job_id=$(sbatch --job-name=merging --output=${merging_log_dir}/merging_%A_%a.out \
