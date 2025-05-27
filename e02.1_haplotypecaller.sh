@@ -38,13 +38,13 @@ NUM=$SLURM_ARRAY_TASK_ID
 NAME=$(cat $sample_ids | head -$NUM | tail -1)
 
 # Set up directories
-fastp_result=${output_dir}/00_samples/${NAME}/00_fastp_results
-haplotype_output=${output_dir}/00_samples/${NAME}/01_haplotype_result
-bam_dir=${haplotype_output}/00_bam_files
-bam_after_marks=${haplotype_output}/01_bam_after_marks
-marksduplicate_metrics=${haplotype_output}/02_marksduplicate_metrics
-BQSR_report=${haplotype_output}/03_BQSR_report
-bam_after_bqsr_results=${haplotype_output}/04_after_bqsr_results
+fastp_result=${output_dir}/00_samples/${NAME}/00_fastp
+preproc_output=${output_dir}/00_samples/${NAME}/01_CPU_preproc_results
+bam_dir=${preproc_output}/00_bam_files
+bam_after_marks=${preproc_output}/01_bam_after_marks
+marksduplicate_metrics=${preproc_output}/02_duplicate_metrics
+BQSR_report=${preproc_output}/03_BQSR_report
+bam_after_bqsr_results=${preproc_output}/04_after_bqsr
 gvcf_output=${output_dir}/01_gvcf
 
 for dir in ${temp_dir} ${bam_dir} ${bam_after_marks} ${marksduplicate_metrics} \

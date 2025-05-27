@@ -33,7 +33,7 @@ NUM=$SLURM_ARRAY_TASK_ID
 NAME=$(cat $sample_ids | head -$NUM | tail -1)
 
 fastq_dir=${output_dir}/00_samples/${NAME}
-fastp_result=${output_dir}/00_samples/${NAME}/00_fastp_results
+fastp_result=${output_dir}/00_samples/${NAME}/00_fastp
 fastp_result_all=${output_dir}/00_samples/01_fastp_all_results
 
 mkdir -p ${fastp_result}

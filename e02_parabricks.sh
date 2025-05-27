@@ -35,8 +35,8 @@ sample_ids=${output_dir}/sample_ids.txt
 NUM=$SGE_TASK_ID
 NAME=$(cat $sample_ids | head -$NUM | tail -1)
 
-fastp_result=${output_dir}/00_samples/${NAME}/00_fastp_results
-parabricks_output=${output_dir}/00_samples/${NAME}/01_parabricks_results
+fastp_result=${output_dir}/00_samples/${NAME}/00_fastp
+parabricks_output=${output_dir}/00_samples/${NAME}/02_GPU_preproc_results
 
 
 for dir in ${temp_dir} ${parabricks_output}/01_bam_after_marks/ ${parabricks_output}/02_marksduplicate_metrics/ \
@@ -58,7 +58,7 @@ singularity exec --nv -B /mnt:/mnt ${parabricks_sif} \
     --knownSites ${Ref_dir}/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz \
     --gvcf \
     --out-bam ${parabricks_output}/01_bam_after_marks/${NAME}.germline_dedup.bam \
-    --out-duplicate-metrics ${parabricks_output}/02_marksduplicate_metrics/${NAME}.germline_dedup.bam.metrics.txt \
+    --out-duplicate-metrics ${parabricks_output}/02_duplicate_metrics/${NAME}.germline_dedup.bam.metrics.txt \
     --out-recal-file ${parabricks_output}/03_BQSR_report/${NAME}.germline_recal_table.txt \
-    --htvc-bam-output ${parabricks_output}/04_haplo_htvc_results/${NAME}.germline_htvc.bam \
+    --htvc-bam-output ${parabricks_output}/04_haplo_htvc/${NAME}.germline_htvc.bam \
     --out-variants ${output_dir}/01_gvcf/${NAME}.germline.g.vcf
