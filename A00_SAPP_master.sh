@@ -83,11 +83,6 @@ variant_per_sample_log_dir=${output_dir}/98_logs/e05_var_per_sample/
 merging_log_dir=${output_dir}/98_logs/e06_merging/
 sample_ids_log_dir=${output_dir}/98_logs/e00_sample_ids/
 
-for dir in ${sample_ids_log_dir} ${fastp_log_dir} ${GATK_log_dir} ${ANNOVAR_log_dir} ${variant_per_sample_log_dir} ${merging_log_dir} 
-do
-    mkdir -p ${dir}
-done
-
 #==========================================Building sample id file====================================
 
 ## NOTE: This step can be skipped if you can generate a file with sample names in one column in a txt.file.
@@ -117,18 +112,12 @@ if [ "$gpu" == "True" ];then
 #Running Parabricks using GPU nodes
 job_name=parabricks
 
-#Creating log directory
-mkdir -p ${Parabricks_log_dir}
-
 qsub -N ${job_name} -t 1:${num_of_samples}:1 -tc ${parabricks_array_job_limit} -o ${Parabricks_log_dir} -e ${Parabricks_log_dir} -q ${gpu_node} -hold_jid fastp e02_parabricks.sh
 fi
 
 if [ "$cpu" == "True" ];then
 #Running GATK haplotypcaller using CPU nodes
 job_name=haplotype_caller
-
-#Creating log directory
-mkdir -p ${Parabricks_log_dir}
 
 haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${haplotypcaller_log_dir}/${job_name}_%A_%a.out \
                         --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
@@ -137,8 +126,6 @@ echo "${date}: Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
 fi
 
 #=========================================GATK Genotyping=============================================
-#Creating log directory
-mkdir -p ${GATK_log_dir}
 
 #Running GATK Genotyping
 genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genotyping_%A_%a.out \
