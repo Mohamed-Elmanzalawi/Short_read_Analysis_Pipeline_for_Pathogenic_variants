@@ -155,7 +155,9 @@ singularity exec ${gatk_sif} gatk MergeVcfs \
        --OUTPUT ${genotype_dir}/chr${CHR}_all.filt.vcf.gz
 
 #Light_mode: Deleting unecessary results
-for dir in ${combinegvcf_dir} ${gvcf}
-do
-    rm -rf ${dir} 
-done
+if [[ ${light_mode} == "true" ]]; then
+    for dir in ${combinegvcf_dir} ${gvcf}
+    do
+        rm -rf ${dir} 
+    done
+fi

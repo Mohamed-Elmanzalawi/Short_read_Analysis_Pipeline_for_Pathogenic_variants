@@ -100,8 +100,9 @@ singularity exec ${gatk_sif} gatk --java-options -Xmx16g \
 
 #Light_mode: Deleting unecessary results
 if [[ ${light_mode} == "true" ]]; then
-for dir in ${bam_dir} ${marksduplicate_metrics} ${fastp_result}\
-${BQSR_report} ${bam_after_bqsr_results} 
-do
-    rm -rf ${dir} 
-done
+    for dir in ${bam_dir} ${marksduplicate_metrics} ${fastp_result}\
+        ${BQSR_report} ${bam_after_bqsr_results} 
+    do
+        rm -rf ${dir} 
+    done
+fi

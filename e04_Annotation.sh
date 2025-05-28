@@ -83,4 +83,6 @@ cp ${annotation_dir}/analysis-ready.hg38_multianno.txt ${annotation_dir}/analysi
 sed -i "1s/.*/$new_header/" ${annotation_dir}/analysis-ready.hg38_multianno.txt
 
 #Light_mode: Deleting unecessary results
-rm -rf ${genotype_dir} 
+if [[ ${light_mode} == "true" ]]; then
+    rm -rf ${genotype_dir} 
+fi
