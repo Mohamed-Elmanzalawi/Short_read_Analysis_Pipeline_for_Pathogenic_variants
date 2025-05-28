@@ -68,7 +68,8 @@ output_dir=$(jq -r .output_file.path ${config_file})
 num_of_samples=$(jq -r .sample_data.num_of_samples ${config_file})
 starting_sample=$(jq -r .sample_data.starting_sample ${config_file})
 fastp_array_job_limit=$(jq -r .parameters.fastp_array_job_limit ${config_file})
-parabricks_array_job_limit=$(jq -r .parameters.fastp_array_job_limit ${config_file})
+parabricks_array_job_limit=$(jq -r .parameters.parabricks_array_job_limit ${config_file})
+haplotypecaller_array_job_limit=$(jq -r .parameters.haplotypecaller_array_job_limit ${config_file})
 gpu_node=$(jq -r .parameters.gpu_node ${config_file})
 cpu_node=$(jq -r .parameters.cpu_node ${config_file})
 
@@ -112,14 +113,17 @@ if [ "$gpu" == "True" ];then
 #Running Parabricks using GPU nodes
 job_name=parabricks
 
-qsub -N ${job_name} -t 1:${num_of_samples}:1 -tc ${parabricks_array_job_limit} -o ${Parabricks_log_dir} -e ${Parabricks_log_dir} -q ${gpu_node} -hold_jid fastp e02_parabricks.sh
+parabricks_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${parabricks_array_job_limit} --output=${Parabricks_log_dir}/${job_name}_%A_%a.out \
+                        --error=${Parabricks_log_dir}/${job_name}_%A_%a.err --partition=${gpu_node} --dependency=afterok:${fastp_job_id} e02_parabricks.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
+
+echo "${date}: Submitted batch job ${parabricks_job_id} -- ${job_name}"
 fi
 
 if [ "$cpu" == "True" ];then
 #Running GATK haplotypcaller using CPU nodes
 job_name=haplotype_caller
 
-haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${fastp_array_job_limit} --output=${haplotypcaller_log_dir}/${job_name}_%A_%a.out \
+haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${haplotypecaller_array_job_limit} --output=${haplotypcaller_log_dir}/${job_name}_%A_%a.out \
                         --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
 
 echo "${date}: Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
