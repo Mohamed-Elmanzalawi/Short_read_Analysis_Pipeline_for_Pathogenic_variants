@@ -82,6 +82,7 @@
         "gpu_node": "all.q@gpu1",
         "fastp_array_job_limit": 20,
         "parabricks_array_job_limit": 2,
+        "haplotypecaller_array_job_limit": 20,
         "Pathogenicity_Prediction": "True",
         "Pathogenicity_conditions": 5,
         "comments": {
