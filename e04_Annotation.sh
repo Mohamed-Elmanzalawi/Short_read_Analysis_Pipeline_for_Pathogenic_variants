@@ -37,6 +37,7 @@ conda deactivate
 
 genotype_dir=${output_dir}/03_genotyping_gvcf
 annotation_dir=${output_dir}/04_annotation
+combinegvcf_dir=${output_dir}/02_combine_gvcf
 
 mkdir -p ${annotation_dir}
 
@@ -82,7 +83,17 @@ cp ${annotation_dir}/analysis-ready.hg38_multianno.txt ${annotation_dir}/analysi
 # Replace the header in the first file
 sed -i "1s/.*/$new_header/" ${annotation_dir}/analysis-ready.hg38_multianno.txt
 
-#Light_mode: Deleting unecessary results
+# #Light_mode: Deleting unecessary results
+fastp_result=${output_dir}/00_samples/${NAME}/00_fastp
+bam_dir=${preproc_output}/00_bam_files
+marksduplicate_metrics=${preproc_output}/02_duplicate_metrics
+BQSR_report=${preproc_output}/03_BQSR_report
+bam_after_bqsr_results=${preproc_output}/04_after_bqsr
+
 if [[ ${light_mode} == "true" ]]; then
-    rm -rf ${genotype_dir} 
+    for dir in ${bam_dir} ${marksduplicate_metrics} ${fastp_result}\
+        ${BQSR_report} ${bam_after_bqsr_results} ${genotype_dir} ${combinegvcf_dir}
+    do
+        rm -rf ${dir} 
+    done
 fi
