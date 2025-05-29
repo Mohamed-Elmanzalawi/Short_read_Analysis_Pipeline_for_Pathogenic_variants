@@ -28,4 +28,4 @@ output_dir=$(jq -r .output_file.path ${config_file})
 extension=*_filt.txt
 #=====================================================================================================
 
-~/miniconda3/bin/python e06.1_merge_var.py $output_dir $extension
+python e06.1_merge_var.py $output_dir $extension
