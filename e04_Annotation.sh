@@ -44,12 +44,12 @@ mkdir -p ${annotation_dir}
 vcf_inputs=$(ls ${genotype_dir}/*_all.filt.vcf.gz | awk '{print "--INPUT "$0}' | tr '\n' ' ')
 singularity exec ${gatk_sif} gatk MergeVcfs \
       ${vcf_inputs} \
-      --OUTPUT ${genotype_dir}/chr_merged_all.filt.vcf.gz
+      --OUTPUT ${genotype_dir}/all_chr_merged.filt.vcf.gz
 
 singularity exec ${gatk_sif} gatk  SelectVariants \
                                         --exclude-filtered \
                                         -select-genotype "GQ > 10 && DP > 5" \
-                                        -V ${genotype_dir}/chr_merged_all.filt.vcf.gz \
+                                        -V ${genotype_dir}/all_chr_merged.filt.vcf.gz \
                                         -O ${genotype_dir}/analysis-ready.vcf.gz
 
 
@@ -84,7 +84,8 @@ cp ${annotation_dir}/analysis-ready.hg38_multianno.txt ${annotation_dir}/analysi
 sed -i "1s/.*/$new_header/" ${annotation_dir}/analysis-ready.hg38_multianno.txt
 
 # #Light_mode: Deleting unecessary results
-fastp_result=${output_dir}/00_samples/${NAME}/00_fastp
+fastp_result=${output_dir}/00_samples/*/00_fastp
+preproc_output=${output_dir}/00_samples/*/01_CPU_preproc_results
 bam_dir=${preproc_output}/00_bam_files
 marksduplicate_metrics=${preproc_output}/02_duplicate_metrics
 BQSR_report=${preproc_output}/03_BQSR_report
