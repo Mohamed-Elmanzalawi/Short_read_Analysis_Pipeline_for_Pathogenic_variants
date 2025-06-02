@@ -124,7 +124,7 @@ if [ "$cpu" == "True" ];then
 job_name=haplotype_caller
 
 haplotype_caller_job_id=$(sbatch --job-name=${job_name} --array=${starting_sample}-${num_of_samples}%${haplotypecaller_array_job_limit} --output=${haplotypcaller_log_dir}/${job_name}_%A_%a.out \
-                        --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
+                        --error=${haplotypcaller_log_dir}/${job_name}_%A_%a.err --partition=${cpu_node} --dependency=afterok:${fastp_job_id} e02.1_haplotypecaller.sh --config ${config_file} | awk '{print $4}')
 
 echo "${date}: Submitted batch job ${haplotype_caller_job_id} -- ${job_name}"
 fi
@@ -133,7 +133,7 @@ fi
 
 #Running GATK Genotyping
 genotyping_job_id=$(sbatch --job-name=genotyping --output=${GATK_log_dir}/genotyping_%A_%a.out \
-                        --error=${GATK_log_dir}/genotyping_%A_%a.err --partition=${cpu_node} --dependency=afterok:${haplotype_caller_job_id} e03_genotyping.sh --config ${config_file} --light_mode ${light_mode} | awk '{print $4}')
+                        --error=${GATK_log_dir}/genotyping_%A_%a.err --partition=${cpu_node} --dependency=afterok:${haplotype_caller_job_id} e03_genotyping.sh --config ${config_file} | awk '{print $4}')
 
 echo "${date}: Submitted batch job ${genotyping_job_id} -- genotyping"
 

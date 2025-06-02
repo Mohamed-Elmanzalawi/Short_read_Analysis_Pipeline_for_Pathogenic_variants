@@ -8,15 +8,13 @@ set -euo pipefail
 
 #======================================Change this when working on new project========================
 # load config file
-OPTIONS=$(getopt -o "" -l light_mode,config: -- "$@")
+OPTIONS=$(getopt -o "" -l config: -- "$@")
 
 config_file="e99_config.json"
-light_mode=false
 eval set -- "$OPTIONS"
 while true; do
     case "$1" in
         --config) config_file=$2; shift 2;;
-        --light_mode)  light_mode=true; shift ;;
         --) shift; break ;;
     esac
 done
@@ -97,12 +95,3 @@ singularity exec ${gatk_sif} gatk --java-options -Xmx16g \
             --reference ${Ref} \
             -ERC GVCF \
             --native-pair-hmm-threads 16
-
-#Light_mode: Deleting unecessary results
-# if [[ ${light_mode} == "true" ]]; then
-#     for dir in ${bam_dir} ${marksduplicate_metrics} ${fastp_result}\
-#         ${BQSR_report} ${bam_after_bqsr_results} 
-#     do
-#         rm -rf ${dir} 
-#     done
-# fi

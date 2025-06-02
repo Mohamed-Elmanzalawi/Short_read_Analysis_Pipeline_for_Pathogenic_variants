@@ -9,15 +9,13 @@ set -euo pipefail
 
 #======================================Change this when working on new project========================
 # load config file
-OPTIONS=$(getopt -o "" -l light_mode,config: -- "$@")
+OPTIONS=$(getopt -o "" -l config: -- "$@")
 
 config_file="e99_config.json"
-light_mode=false
 eval set -- "$OPTIONS"
 while true; do
     case "$1" in
         --config) config_file=$2; shift 2;;
-        --light_mode)  light_mode=true; shift ;;
         --) shift; break ;;
     esac
 done
