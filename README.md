@@ -62,7 +62,7 @@ You will find them in the folder named ```00_resources/01_reference38```
   
 5. Download ANNOVAR and its databases  
    **Official site:** https://annovar.openbioinformatics.org/en/latest/user-guide/download/  
-   You can also simply run the script ```01_download_annovar.sh``` and download all of them in one step using the command below.   
+   You can also run the script ```01_download_annovar.sh``` to download all of them in one step using the command below.   
 ```
 bash 01_download_annovar.sh
 ```
@@ -118,7 +118,7 @@ Options:
 The pipeline will save all outputs to the output folder assigned in the `e99_config,json`.  
 Below is a schematic showing the SAPP general output files structure.
 
-![pipeline output_structure](./pictures/SAPP_General_output_files_structure.jpg)
+![pipeline output_structure](./pictures/SAPP_General_output_files_structure_v2.jpg)
 
 ### Contributors  
 
