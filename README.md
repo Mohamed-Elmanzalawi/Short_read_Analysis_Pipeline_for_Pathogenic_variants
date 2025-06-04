@@ -120,6 +120,8 @@ Options:
 ### Details on the output
 
 The pipeline will save all outputs to the output folder assigned in the `e99_config,json`.  
+⭐**You will Also find a merged file with all the variants from every sample combined after filteration in your ```05_var_per_sample``` folder under the name ```merged_vars.txt```.**  
+
 Below is a schematic showing the SAPP general output files structure.
 
 ![pipeline output_structure](./pictures/SAPP_General_output_files_structure_v2.jpg)
